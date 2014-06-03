@@ -1,0 +1,5 @@
+Development goals for 0.2:
+
+Implement feature to record custom changeset number.
+Add feature to put custom header in code files.
+Add feature to automatically generate batch file for last command set.

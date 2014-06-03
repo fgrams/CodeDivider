@@ -1,0 +1,231 @@
+WARNING: THIS DOCUMENTATION IS NOT ACCURATE.
+
+PROGRAM DOCUMENTATION
+
+////////////////////////////////////////////////////////////////////////////////
+PROGRAM HEADER
+
+Program Name: Code Divider
+Version: 0.1
+Release Date: TBD
+
+Copyright 2014, Frank Grams
+
+WARNING: This is a development release of the program.  It may contain
+significant flaws or bugs.  Please be reasonably careful to verify its
+results when using it.
+
+Release Terms:
+
+This file is part of Code Divider.
+
+Code Divider is free software: you may redistribute it and/or modify it
+under the terms of the GNU General Public License (GPL) as published by the
+Free Software Foundation, either version 3 of the License, or (at your
+option) any later version.
+
+Code Divider is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program.  If not, please view the license at 
+<http://www.gnu.org/licenses/>.
+
+Dependencies:
+
+This software requires the installation of node.js, a software platform for
+Javascript applications that is released under the MIT license.  The MIT
+license is compatible with the GPL, so software distributed under the
+GPL can be written for this platform.  Node.js is maintained by Joyent,
+Inc., and can be found at <nodejs.org>.
+
+Notes:
+
+See "readme.txt" for detailed information about this release.
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+PROGRAM DESCRIPTION
+
+This program is a companion utility for using with version control systems
+when maintaining code repositories.  It maintains a folder of individual text
+files for each subdivision of code in a set of source code files.  The text
+files are identical to the source code except for a header generated for
+each file.  What constitutes a "subdivision" varies by programming language.
+
+Version control systems only report changes and change histories for
+individual files.  Dividing up the script files leverages this existing
+ability to provide information at a greater level of detail.  The purpose of
+this is to make it easier to check for unintended changes prior to commits
+and to make it easier to review the revision history of individual code
+sections.
+
+codeDivider currently only processes Javascript, but more languages
+will be added later.  How much later is not known as of this release.
+The language of a file is determined by its file extension.  Files not having
+a file extension supported by this program will be ignored.  To include a
+non-standard file extension, use the -ext command.
+
+Supported Platforms: Unix
+
+Dependencies:
+
+Program         Website
+--------------------------------------------------------------------------------
+node.js         nodejs.org
+--------------------------------------------------------------------------------
+
+Languages Supported:
+
+Language        Extension  Subdivided By
+--------------------------------------------------------------------------------
+Javascript      .js        function
+--------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+INSTRUCTIONS
+
+Be sure that node.js is installed on your computer.  To run this program,
+use the node command, followed by the full or relative path to codeDivider.js,
+followed by commands to the program.
+
+Example: node /Users/UserName/Downloads/codeDivider/codeDivider.js -repo "/Users
+/Projects/codeDivider"
+
+Committing Changes:
+Make changes to the code in the actual repository, not the duplicate files.
+Before you commit the changes, run this program.  Then, check whether the
+set of changed functions in the duplicate files matches the expected changes
+using the version control system.  Correct any unexpected changes and re-run
+Code Divider.  If you are maintaining the code and the duplicates
+in the same repository, commit the changes.  Otherwise, commit the changes
+to the original repository, then commit the changes to the duplicate
+repository using the changeset number from the original using the
+-changeset command.
+
+Reverting Individual Functions:
+Use your version control system to look at the changeset history for the
+duplicate file for the desired function.  Find the desired version of the
+function, then replace the text in the original code repository for the
+function with the desired text from the previous version of the function.
+Commit changes resulting from this action using the "Committing Changes"
+instructions given above.
+
+WARNINGS:
+This utility will double the size of your repository.  You may wish to maintain
+the subdivided code files in a separate repository to avoid increasing
+download times for non-developers.  The changeset numbers wouldn't match in this
+case, but cross-references to the changesets in the actual repository can be
+maintained in the duplicates using the -cst command.
+
+Not all changes to the code repository will be reflected in the duplicate
+files.  Changes that occur outside of any function definition, their header
+comments, or "End Function" comments following the functions will be ignored.
+
+When commenting out sections of code, be sure that the commented-out sections
+are not adjacent to any head or tail comments surrounding a function.
+Otherwise, the comments will be included as part of the file for the adjacent
+function.
+
+Head or tail comments surrounding functions will be ignored unless they
+are adjacent to the function.  If there is whitespace between the header and
+the function, the comments will be ignored.
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+COMMAND REFERENCE
+
+Note: Command choices will not be retained for subsequent uses of this program.
+Make a batch file to run this program when using the same options routinely.
+
+Also Note: Presumably, programmers avoid using lots of funny characters in the
+paths and filenames for their repositories, so the list of allowable characters
+for file and folder paths in the validation routine is not quite complete.
+If you get errors for valid file or folder paths while running this program,
+that is probably the cause.  Please contact the developer if this known issue
+imacts you, and the offending characters will be added to the validation
+routine.
+
+Command    Description
+--------------------------------------------------------------------------------
+No Commands: View this command reference in the console.
+
+-help      View the contents of "documentation.txt" in the console.
+
+-pre       Preview in the console a list of the files that would have been
+           processed by this program using your commands.
+
+-repo      Required.  Full path to the repo folder for the original code files.
+           Use quotation marks if the path contains spaces.
+           Form:     -repo "FolderPath"
+           Example:  -repo "/Users/userName/Repo Folder"
+
+-dest      Optional.  Full path to the destination folder for the duplicate code
+           files. Use quotation marks if the path contains spaces.  Defaults to
+           the folder path from -repo. The actual write will occur to a
+           folder within the destination folder named with the folder name from
+           -repo plus "_cdivFiles".  This is to prevent accidentally overwriting
+           anything that this program didn't generate initially.  If the
+           destination folder defined here is within the folder defined with
+           -repo, the destination folder will be ignored.  The destination
+           folder will be made to match the current state of the original repo
+           as split by this program, including additions and deletions, with
+           files for unchanged sections being left alone.
+           Form:     -dest "FolderPath"
+           Example:  -dest "/Users/userName/AlternateFolder"
+
+-ign       Optional.  A glob pattern to match against the full file path to any
+           files that you would like to ignore.  Glob is only partially
+           implemented here, so read carefully.  Note that files not having a
+           supported extension are ignored by default and the destination folder
+           is ignored by default.  Use "*" to match 0 or more characters or "?"
+           to match exactly one character.  Follow the -ign command with
+           multiple quoted statements to ignore multiple patterns.
+
+           If the pattern starts with a "-", that character must be escaped with
+           a "\" to search for it.  Otherwise, don't escape "-" with
+           backslashes.  This is necessary here to distinguish between commands
+           and arguments.  Special characters will be searched for literally
+           without needing to escape them.  This command cannot search for ? or
+           * literally, but other special characters are fine.  The search is
+           case-sensitive.  If searching for ? and * matters to you, contact the
+           developer.
+           Form:     -ign "FilePathPattern"
+           Examples:  -ign "\-StartsWithHyphen" "Does-Not-StartWithHyphen-"
+               "*/AnyPathAnyThreeLetterExtension.???"
+               "?:\\WindowsPath\WithTwoLiteralSlashesAtStart\*"
+
+-ext       Optional.  Interperet a different file extension as a supported
+           language.  Multiple definitions can be provided here.  List each
+           extension to be defined, and follow each extension with their
+           applicable languages.
+           Form:     -ext .NewExtension SupportedLanguage
+           Examples: -ext .sj javascript
+                     -ext .foo javascript .bar javascript
+           Supported Languages (enter precisely as listed): javascript
+
+-enc       Optional.  Specify the character encoding to read the input files
+           with.  Defaults to "utf8".
+           Form:     -enc CharacterEncoding
+           Example:  -enc ascii
+           Supported Encodings: The relevant node.js character encodings.
+                     "ascii"   - 7 bit ASCII
+                     "utf8"    - Multibyte encoded Unicode
+                     "utf16le" - 2 or 4 byte little endian Unicode
+                     "ucs2"    - Same as "utf16le"
+
+-cst       Optional.  Specify a changeset number or label to include in the
+           header appended to each output file.  Quotation marks are required.
+           Defaults to none.
+           Form:     -cst "ChangesetNumber"
+           Example:  -cst "937c391"
+                     -cst "Rev. 10.2.1b"
+
+-sets      Output the internal settings values that result from processing a
+           set of arguments.
+
+-args      Output the list of arguments provided.
+////////////////////////////////////////////////////////////////////////////////
